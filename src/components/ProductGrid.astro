@@ -1,0 +1,32 @@
+---
+import ProductCard from './ProductCard.astro';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  products: CollectionEntry<'products'>[];
+  title?: string;
+}
+
+const { products, title } = Astro.props;
+---
+
+{title && <h2 class="section-title">{title}</h2>}
+
+{products.length === 0 ? (
+  <p class="empty-state">No products found.</p>
+) : (
+  <div class="product-grid">
+    {products.map((product) => (
+      <ProductCard
+        title={product.data.title}
+        description={product.data.description}
+        price={product.data.price}
+        image={product.data.image}
+        category={product.data.category}
+        slug={product.id}
+        featured={product.data.featured}
+        tags={product.data.tags}
+      />
+    ))}
+  </div>
+)}

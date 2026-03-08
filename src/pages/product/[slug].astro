@@ -1,0 +1,122 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import ProductCard from '../../components/ProductCard.astro';
+
+export async function getStaticPaths() {
+  const products = await getCollection('products');
+  return products.map((product) => ({
+    params: { slug: product.id },
+    props: { product },
+  }));
+}
+
+const { product } = Astro.props;
+const { Content } = await render(product);
+
+// Get related products (same category, excluding current)
+const allProducts = await getCollection('products');
+const related = allProducts
+  .filter((p) => p.data.category === product.data.category && p.id !== product.id)
+  .slice(0, 3);
+
+// JSON-LD structured data
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: product.data.title,
+  description: product.data.description,
+  image: product.data.image,
+  offers: {
+    '@type': 'Offer',
+    price: product.data.price.replace(/[^0-9.]/g, ''),
+    priceCurrency: 'USD',
+    url: product.data.affiliate_link,
+  },
+};
+---
+
+<Layout
+  title={product.data.title}
+  description={product.data.description}
+  image={product.data.image}
+  type="product"
+>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+  </Fragment>
+
+  <div class="container">
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="/">Home</a>
+      <span aria-hidden="true">›</span>
+      <a href={`/category/${product.data.category}`}>{product.data.category}</a>
+      <span aria-hidden="true">›</span>
+      <span aria-current="page">{product.data.title}</span>
+    </nav>
+
+    <article class="product-detail">
+      <div class="product-image-wrap">
+        <img
+          src={product.data.image}
+          alt={product.data.title}
+          width="600"
+          height="450"
+          loading="eager"
+          decoding="async"
+        />
+      </div>
+
+      <div class="product-info">
+        <a href={`/category/${product.data.category}`} class="category-badge">
+          {product.data.category}
+        </a>
+        <h1>{product.data.title}</h1>
+        <p class="product-price">{product.data.price}</p>
+        <p class="product-description">{product.data.description}</p>
+
+        <a
+          href={product.data.affiliate_link}
+          class="btn-primary"
+          target="_blank"
+          rel="noopener noreferrer sponsored"
+        >
+          View Product →
+        </a>
+        <p class="affiliate-notice">Affiliate link — we may earn a commission.</p>
+
+        {product.data.tags.length > 0 && (
+          <div class="tag-list">
+            {product.data.tags.map((tag) => (
+              <span class="tag">#{tag}</span>
+            ))}
+          </div>
+        )}
+      </div>
+    </article>
+
+    <div class="product-content">
+      <Content />
+    </div>
+
+    {related.length > 0 && (
+      <section class="related-products">
+        <h2>Related Products</h2>
+        <div class="product-grid">
+          {related.map((p) => (
+            <ProductCard
+              title={p.data.title}
+              description={p.data.description}
+              price={p.data.price}
+              image={p.data.image}
+              category={p.data.category}
+              slug={p.id}
+              featured={p.data.featured}
+              tags={p.data.tags}
+            />
+          ))}
+        </div>
+      </section>
+    )}
+  </div>
+</Layout>

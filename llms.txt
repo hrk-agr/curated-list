@@ -1,0 +1,65 @@
+Project: curated-list
+
+Description:
+A static curated products website built with Astro and Markdown content collections.
+Optimized for fast page loads (Lighthouse > 95), clean architecture, and AI agent navigation.
+Zero client-side JavaScript. All pages are pre-rendered to static HTML at build time.
+
+Tech Stack:
+- Astro v4 (static site generation)
+- TypeScript
+- Astro Content Collections (Zod schema validation)
+- Plain CSS (no framework, no Tailwind)
+- No React or client-side JS
+
+Key Directories:
+  src/content/products/  -> product markdown files (source of truth for all product data)
+  src/pages/             -> route definitions (index, category, product)
+  src/components/        -> reusable Astro components
+  src/layouts/           -> page layouts
+  src/styles/            -> global CSS
+  public/images/         -> product and OG images
+  agents/                -> documentation for AI coding agents
+  docs/                  -> deployment and supplementary docs
+
+Key Files:
+  src/content/config.ts        -> Content Collection schema (Zod validation)
+  astro.config.mjs             -> Astro configuration (output: static, site URL)
+  package.json                 -> dependencies and npm scripts
+  src/layouts/Layout.astro     -> base HTML shell, header, footer
+  src/components/SEOHead.astro -> meta tags, OG tags
+
+Key Concepts:
+- Products are Markdown files in src/content/products/
+- Product pages are generated from content collections via getStaticPaths()
+- Categories are derived dynamically from the "category" frontmatter field
+- No hardcoded category list — categories are computed at build time
+- All pages render to static HTML at build time (zero runtime server)
+- Affiliate links use rel="noopener noreferrer sponsored"
+
+Routes:
+  /                      -> homepage: featured products + full product grid + category filter
+  /category/[category]   -> products filtered by category (auto-generated from frontmatter)
+  /product/[slug]        -> individual product detail page (slug = markdown filename)
+
+Product Frontmatter Schema:
+  title: string           (required)
+  description: string     (required)
+  price: string           (required, e.g. "$99")
+  image: string           (required, path like /images/product.jpg)
+  category: string        (required, determines category pages)
+  affiliate_link: string  (required, valid URL)
+  featured: boolean       (optional, default: false)
+  tags: string[]          (optional, default: [])
+
+To Add a Product:
+  1. Create a new .md file in src/content/products/
+  2. Add required frontmatter fields (see schema above)
+  3. Optionally write body content in Markdown (rendered on product detail page)
+  4. Run: npm run build
+
+To Run:
+  npm install
+  npm run dev      -> local development server (http://localhost:4321)
+  npm run build    -> production static build (output: dist/)
+  npm run preview  -> preview production build locally

@@ -1,0 +1,228 @@
+Project: curated-list
+Version: 1.0.0
+Framework: Astro v4 (static site generation)
+Language: TypeScript
+
+================================================================================
+PROJECT ARCHITECTURE
+================================================================================
+
+This project is a fully static product directory website. All pages are
+pre-rendered to HTML at build time. There is no server, no database, and no
+client-side JavaScript. The site is CDN-friendly and can be deployed to Netlify,
+Vercel, Cloudflare Pages, or any static host.
+
+Data flow:
+  Markdown files -> Astro Content Collections -> Static page generation -> dist/
+
+Content model:
+  Products are the only content type. Each product is a single Markdown file
+  with YAML frontmatter. The file slug (filename without extension) becomes
+  the URL slug for the product detail page.
+
+================================================================================
+FILE STRUCTURE
+================================================================================
+
+/
+├── astro.config.mjs            # Astro config: output=static, site URL, HTML compression
+├── package.json                # Dependencies: astro v4, typescript
+├── tsconfig.json               # Extends astro/tsconfigs/strict; path alias @/* -> src/*
+├── .gitignore                  # Ignores: dist/, node_modules/, .env, .DS_Store, .astro/
+├── llms.txt                    # Machine-readable project summary (short)
+├── llms-full.txt               # This file — full machine-readable documentation
+├── README.md                   # Human-readable project documentation
+│
+├── src/
+│   ├── content/
+│   │   ├── config.ts           # Content Collection schema (Zod validation for products)
+│   │   └── products/           # Product Markdown files
+│   │       ├── herman-miller-aeron.md
+│   │       ├── keychron-k2.md
+│   │       ├── sony-wh1000xm5.md
+│   │       └── ugmonk-analog.md
+│   │
+│   ├── layouts/
+│   │   └── Layout.astro        # Base layout: <html>, <head>, header, footer, <slot />
+│   │
+│   ├── components/
+│   │   ├── SEOHead.astro       # <title>, meta description, OG tags, Twitter cards
+│   │   ├── ProductCard.astro   # Product grid card (image, title, price, category)
+│   │   ├── ProductGrid.astro   # Renders a grid of ProductCard components
+│   │   └── CategoryFilter.astro # Navigation bar of category filter links
+│   │
+│   ├── pages/
+│   │   ├── index.astro         # Route: /  (homepage)
+│   │   ├── category/
+│   │   │   └── [category].astro # Route: /category/[category]
+│   │   └── product/
+│   │       └── [slug].astro    # Route: /product/[slug]
+│   │
+│   └── styles/
+│       └── global.css          # All CSS: reset, layout, components, responsive
+│
+├── public/
+│   ├── favicon.svg             # SVG favicon (black square with "C")
+│   └── images/                 # Product images referenced in frontmatter
+│       └── .gitkeep
+│
+├── agents/                     # Documentation for AI coding agents
+│   ├── architecture.md
+│   ├── content-system.md
+│   ├── routing.md
+│   └── how-to-add-product.md
+│
+└── docs/
+    └── deployment.md           # Deployment instructions for various platforms
+
+================================================================================
+CONTENT COLLECTION SCHEMA
+================================================================================
+
+File: src/content/config.ts
+
+The products collection uses Astro Content Collections with Zod validation.
+All fields are validated at build time. A type error will abort the build.
+
+Schema fields:
+  title        : z.string()                    — product name (required)
+  description  : z.string()                    — short description (required)
+  price        : z.string()                    — price string, e.g. "$999" (required)
+  image        : z.string()                    — absolute path, e.g. /images/foo.jpg (required)
+  category     : z.string()                    — lowercase, e.g. "office" (required)
+  affiliate_link: z.string().url()             — full URL (required, validated)
+  featured     : z.boolean().default(false)    — shows in Featured section (optional)
+  tags         : z.array(z.string()).default([]) — searchable tags (optional)
+
+================================================================================
+HOW TO ADD A PRODUCT
+================================================================================
+
+1. Create a new file: src/content/products/your-product-name.md
+   The filename (without .md) becomes the URL slug.
+   Use lowercase and hyphens: "my-product.md" -> /product/my-product
+
+2. Add frontmatter at the top of the file:
+
+   ---
+   title: Your Product Name
+   description: A concise description of the product.
+   price: $149
+   image: /images/your-product.jpg
+   category: office
+   affiliate_link: https://example.com/product
+   featured: false
+   tags:
+     - tag1
+     - tag2
+   ---
+
+3. Optionally add body content in Markdown below the frontmatter.
+   This content renders on the product detail page below the product info panel.
+
+4. Add the product image to: public/images/your-product.jpg
+   Recommended dimensions: 800x600px (4:3 aspect ratio)
+
+5. Run: npm run build
+   The new product will appear on the homepage, its category page, and at /product/your-product-name
+
+================================================================================
+HOW PAGES ARE GENERATED
+================================================================================
+
+Homepage (src/pages/index.astro):
+  - Calls getCollection('products') to fetch all products
+  - Filters products where featured === true for the "Featured" section
+  - Derives unique categories via Set() from all product.data.category values
+  - Renders CategoryFilter (links) and ProductGrid components
+
+Category pages (src/pages/category/[category].astro):
+  - Uses getStaticPaths() to generate one page per unique category
+  - Categories are derived dynamically from product frontmatter (no hardcoded list)
+  - Each path receives filtered products as props
+  - Adding a new category requires only creating a product with that category value
+
+Product pages (src/pages/product/[slug].astro):
+  - Uses getStaticPaths() to generate one page per product
+  - slug = filename without .md extension
+  - Calls product.render() to get the Content component (rendered Markdown body)
+  - Calls getCollection('products') again to find related products (same category)
+  - Injects JSON-LD Product structured data into <head> via named slot
+
+================================================================================
+HOW ROUTING WORKS
+================================================================================
+
+Astro uses file-based routing. Files in src/pages/ map to URL routes:
+
+  src/pages/index.astro                -> /
+  src/pages/category/[category].astro -> /category/:category (dynamic)
+  src/pages/product/[slug].astro      -> /product/:slug (dynamic)
+
+Dynamic routes require getStaticPaths() which returns an array of
+{ params, props } objects. Each object generates one HTML page.
+
+At build time, Astro calls getStaticPaths() for each dynamic route file,
+generates all paths, renders each page to static HTML, and writes to dist/.
+
+================================================================================
+HOW CATEGORIES ARE DERIVED
+================================================================================
+
+Categories are NOT hardcoded anywhere. They are computed at build time:
+
+  const allProducts = await getCollection('products');
+  const categories = [...new Set(allProducts.map(p => p.data.category))].sort();
+
+This means:
+  - Adding a product with category: "gadgets" automatically creates /category/gadgets
+  - Removing all products from a category removes that category page
+  - The CategoryFilter component receives the computed list and renders links
+
+The nav links in Layout.astro ARE hardcoded (office, audio, productivity).
+Update those manually when adding new major categories.
+
+================================================================================
+HOW TO BUILD THE PROJECT
+================================================================================
+
+Prerequisites:
+  - Node.js 18+ (LTS recommended)
+  - npm (included with Node.js)
+
+Commands:
+  npm install          Install dependencies (creates node_modules/)
+  npm run dev          Start dev server at http://localhost:4321 with HMR
+  npm run build        Build static site to dist/ (production)
+  npm run preview      Serve the dist/ folder locally to preview the build
+  npm run astro        Run Astro CLI commands directly
+
+Build output:
+  All generated HTML, CSS, and assets are written to dist/
+  dist/ is self-contained and can be uploaded to any static host
+
+================================================================================
+PERFORMANCE DESIGN DECISIONS
+================================================================================
+
+- Zero client-side JavaScript (no React, no Vue, no framework runtime)
+- CSS is inlined when small enough (controlled by build.inlineStylesheets: 'auto')
+- HTML is compressed at build time (compressHTML: true)
+- Images use loading="lazy" on cards, loading="eager" on hero product images
+- Images use decoding="async" to avoid blocking rendering
+- Sticky header uses CSS only (no JS scroll listeners)
+- Category filtering is done via navigation links (no JS filter)
+- All fonts use system font stack (no web font downloads)
+
+================================================================================
+SEO DESIGN DECISIONS
+================================================================================
+
+- Each page has unique <title>, <meta description>, canonical URL
+- Open Graph tags on all pages (og:title, og:description, og:image, og:url)
+- Twitter card tags on all pages
+- Product pages include JSON-LD structured data (Schema.org Product type)
+- Semantic HTML: <header>, <main>, <footer>, <article>, <nav>, <section>
+- Breadcrumb navigation with aria-label and aria-current
+- Category badges and filter links use proper anchor tags (crawlable)
+- Affiliate links use rel="noopener noreferrer sponsored"

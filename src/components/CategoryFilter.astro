@@ -1,0 +1,25 @@
+---
+interface Props {
+  categories: string[];
+  activeCategory?: string;
+}
+
+const { categories, activeCategory } = Astro.props;
+---
+
+<nav class="category-filter" aria-label="Filter by category">
+  <a
+    href="/"
+    class:list={['filter-btn', { active: !activeCategory }]}
+  >
+    All
+  </a>
+  {categories.map((cat) => (
+    <a
+      href={`/category/${cat}`}
+      class:list={['filter-btn', { active: cat === activeCategory }]}
+    >
+      {cat.charAt(0).toUpperCase() + cat.slice(1)}
+    </a>
+  ))}
+</nav>

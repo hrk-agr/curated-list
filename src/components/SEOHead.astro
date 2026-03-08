@@ -1,0 +1,31 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  type: 'website' | 'product';
+  canonicalURL: URL;
+}
+
+const { title, description, image, type, canonicalURL } = Astro.props;
+const siteTitle = title === 'Curated' ? title : `${title} | Curated`;
+const ogImage = image ?? '/images/og-default.jpg';
+---
+
+<title>{siteTitle}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonicalURL} />
+
+<!-- Open Graph -->
+<meta property="og:type" content={type} />
+<meta property="og:title" content={siteTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:url" content={canonicalURL} />
+<meta property="og:site_name" content="Curated" />
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={siteTitle} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />

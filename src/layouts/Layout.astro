@@ -1,0 +1,63 @@
+---
+import SEOHead from '../components/SEOHead.astro';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+  type?: 'website' | 'product';
+}
+
+const {
+  title,
+  description = 'A curated collection of products worth buying.',
+  image,
+  type = 'website',
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? 'https://curated.example.com');
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <SEOHead
+      title={title}
+      description={description}
+      image={image}
+      type={type}
+      canonicalURL={canonicalURL}
+    />
+    <slot name="head" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container">
+        <a href="/" class="site-logo">Curated<span>.</span></a>
+        <nav class="site-nav" aria-label="Main navigation">
+          <a href="/">Home</a>
+          <a href="/category/office">Office</a>
+          <a href="/category/audio">Audio</a>
+          <a href="/category/productivity">Productivity</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        <p>&copy; {new Date().getFullYear()} Curated. Products we actually use and recommend.</p>
+        <p class="footer-disclosure">
+          This site contains affiliate links. We may earn a small commission at no extra cost to you.
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,47 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import ProductGrid from '../../components/ProductGrid.astro';
+import CategoryFilter from '../../components/CategoryFilter.astro';
+
+export async function getStaticPaths() {
+  const allProducts = await getCollection('products');
+  const categories = [...new Set(allProducts.map((p) => p.data.category))];
+
+  return categories.map((category) => ({
+    params: { category },
+    props: {
+      products: allProducts.filter((p) => p.data.category === category),
+      allCategories: categories.sort(),
+    },
+  }));
+}
+
+const { category } = Astro.params;
+const { products, allCategories } = Astro.props;
+const categoryTitle = category.charAt(0).toUpperCase() + category.slice(1);
+---
+
+<Layout
+  title={`${categoryTitle} Products`}
+  description={`Curated ${categoryTitle.toLowerCase()} products worth buying. Handpicked for quality and value.`}
+>
+  <section class="page-header">
+    <div class="container">
+      <h1>{categoryTitle}</h1>
+      <p>{products.length} product{products.length !== 1 ? 's' : ''}</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <CategoryFilter categories={allCategories} activeCategory={category} />
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <ProductGrid products={products} />
+    </div>
+  </section>
+</Layout>
