@@ -39,10 +39,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? 'https://curated.
       <div class="container">
         <a href="/" class="site-logo">Curated<span>.</span></a>
         <nav class="site-nav" aria-label="Main navigation">
-          <a href="/">Home</a>
-          <a href="/category/office">Office</a>
-          <a href="/category/audio">Audio</a>
-          <a href="/category/productivity">Productivity</a>
+          <a href="/about">About</a>
         </nav>
       </div>
     </header>
@@ -53,10 +50,8 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? 'https://curated.
 
     <footer class="site-footer">
       <div class="container">
-        <p>&copy; {new Date().getFullYear()} Curated. Products we actually use and recommend.</p>
-        <p class="footer-disclosure">
-          This site contains affiliate links. We may earn a small commission at no extra cost to you.
-        </p>
+        <p>&copy; {new Date().getFullYear()} Curated by <a href="https://hrithikagarwal.com" target="_blank" rel="noopener noreferrer">Hrithik Agarwal</a>.</p>
+        <p class="footer-disclosure">This site contains affiliate links. We may earn a small commission at no extra cost to you.</p>
       </div>
     </footer>
   </body>

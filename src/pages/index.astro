@@ -1,42 +1,44 @@
 ---
-import { getCollection } from 'astro:content';
-import Layout from '../layouts/Layout.astro';
-import ProductGrid from '../components/ProductGrid.astro';
-import CategoryFilter from '../components/CategoryFilter.astro';
+import { getCollection } from "astro:content";
+import Layout from "../layouts/Layout.astro";
+import ProductGrid from "../components/ProductGrid.astro";
+import CategoryFilter from "../components/CategoryFilter.astro";
 
-const allProducts = await getCollection('products');
+const allProducts = await getCollection("products");
 const featuredProducts = allProducts.filter((p) => p.data.featured);
 const categories = [...new Set(allProducts.map((p) => p.data.category))].sort();
 ---
 
 <Layout
-  title="Curated"
-  description="A curated collection of products worth buying. Handpicked tools and gear for focused, productive work."
+    title="Curated"
+    description="A curated collection of products worth buying. Handpicked"
 >
-  <section class="hero">
-    <div class="container">
-      <h1>Products <em>worth</em> buying.</h1>
-      <p class="hero-subtitle">Handpicked tools and gear for focused, productive work.</p>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="container">
-      <CategoryFilter categories={categories} />
-    </div>
-  </section>
-
-  {featuredProducts.length > 0 && (
-    <section class="section">
-      <div class="container">
-        <ProductGrid products={featuredProducts} title="Featured" />
-      </div>
+    <section class="hero">
+        <div class="container">
+            <h1>Products <em>worth</em> buying.</h1>
+            <p class="hero-subtitle">Handpicked</p>
+        </div>
     </section>
-  )}
 
-  <section class="section">
-    <div class="container">
-      <ProductGrid products={allProducts} title="All Products" />
-    </div>
-  </section>
+    <section class="section">
+        <div class="container">
+            <CategoryFilter categories={categories} />
+        </div>
+    </section>
+
+    {
+        featuredProducts.length > 0 && (
+            <section class="section">
+                <div class="container">
+                    <ProductGrid products={featuredProducts} title="Featured" />
+                </div>
+            </section>
+        )
+    }
+
+    <section class="section">
+        <div class="container">
+            <ProductGrid products={allProducts} title="All Products" />
+        </div>
+    </section>
 </Layout>

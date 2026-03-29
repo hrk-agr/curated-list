@@ -15,29 +15,39 @@ const { title, description, price, image, category, slug, featured = false } = A
 
 <article class:list={['product-card', { featured }]}>
   <a href={`/product/${slug}`} class="card-link">
-    <div class="card-image">
-      <img
-        src={image}
-        alt={title}
-        width="400"
-        height="300"
-        loading="lazy"
-        decoding="async"
-      />
+
+    <!-- blob background -->
+    <div class="card-blob" aria-hidden="true"></div>
+
+    <!-- product image (sits over blob) -->
+    <img
+      src={image}
+      alt={title}
+      width="400"
+      height="300"
+      loading="lazy"
+      decoding="async"
+      class="card-img"
+    />
+
+    <!-- top badges -->
+    <div class="card-top">
+      <a
+        href={`/category/${category}`}
+        class="category-badge"
+        onclick="event.stopPropagation()"
+      >{category}</a>
+      {featured && <span class="featured-badge">Featured</span>}
     </div>
-    <div class="card-body">
-      <div class="card-meta">
-        <a href={`/category/${category}`} class="category-badge" onclick="event.stopPropagation()">
-          {category}
-        </a>
-        {featured && <span class="featured-badge">Featured</span>}
-      </div>
-      <h2 class="card-title">{title}</h2>
+
+    <!-- bottom text -->
+    <div class="card-bottom">
       <p class="card-description">{description}</p>
       <div class="card-footer">
+        <h2 class="card-title">{title}</h2>
         <span class="card-price">{price}</span>
-        <span class="card-cta">View →</span>
       </div>
     </div>
+
   </a>
 </article>

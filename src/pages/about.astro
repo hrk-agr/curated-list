@@ -1,0 +1,121 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+  title="About"
+  description="Why curation matters. The thinking behind this list."
+>
+  <div class="container">
+    <div class="about-page">
+
+      <header class="about-header">
+        <p class="about-label">About</p>
+        <h1>Why curation matters.</h1>
+      </header>
+
+      <div class="about-body">
+        <p>
+          We live in an age of infinite choice. Every product category has hundreds of options,
+          each with thousands of reviews, conflicting opinions, and paid placements designed
+          to confuse rather than help.
+        </p>
+
+        <p>
+          Curation is the opposite of that. It is the practice of doing the hard work of
+          evaluation once — so you don't have to do it every time you need something.
+        </p>
+
+        <h2>The problem with more</h2>
+        <p>
+          More options create more anxiety, not more satisfaction. Research consistently shows
+          that when faced with too many choices, people either choose poorly or don't choose
+          at all. The paradox of choice is real, and it costs us time, money, and mental energy.
+        </p>
+
+        <h2>What good curation looks like</h2>
+        <p>
+          A good curated list is opinionated. It takes a position. It says: out of everything
+          available, these are the ones worth your attention. Not because they are the cheapest,
+          or the most popular, but because they are genuinely excellent.
+        </p>
+        <p>
+          Every product on this list has been chosen deliberately. If it is here, there is a
+          reason. If it is not here, there is a reason for that too.
+        </p>
+
+        <h2>About this list</h2>
+        <p>
+          This site is curated by <a href="https://hrithikagarwal.com" target="_blank" rel="noopener noreferrer">Hrithik Agarwal</a>.
+          The goal is simple: a short, honest list of products worth buying — with no filler,
+          no sponsored rankings, and no noise.
+        </p>
+        <p>
+          Some links are affiliate links. Commissions, if any, do not influence what gets
+          listed here. A product is either worth recommending or it is not.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .about-page {
+    max-width: 620px;
+    padding: 4rem 0 6rem;
+  }
+
+  .about-header {
+    margin-bottom: 3rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .about-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-blue-400);
+    margin-bottom: 1rem;
+  }
+
+  .about-header h1 {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+
+  .about-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+  }
+
+  .about-body p {
+    font-size: 0.9rem;
+    line-height: 1.85;
+    color: var(--color-muted);
+    font-weight: 400;
+  }
+
+  .about-body h2 {
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--color-text);
+    margin-top: 1.5rem;
+  }
+
+  .about-body a {
+    color: var(--color-blue-600);
+    border-bottom: 1px solid var(--color-blue-200);
+    transition: border-color 0.15s;
+  }
+
+  .about-body a:hover {
+    border-color: var(--color-blue-500);
+  }
+</style>
